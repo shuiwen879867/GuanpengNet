@@ -1,5 +1,7 @@
 # 关鹏网与关鹏机器人开源傻瓜包
 
+[下载 Windows / Linux 部署包](https://github.com/shuiwen879867/GuanpengNet/releases/latest) · [Linux 测试记录](https://github.com/shuiwen879867/GuanpengNet/actions/workflows/linux-test.yml)
+
 本项目包含关鹏网战绩查询网站，以及基于 AstrBot 4.14.4 的关鹏机器人（战绩、职业统计、签到和背景）。采用 AGPL-3.0，保留 AstrBot 的许可证和完整框架源码。
 
 ## Windows 三步启动
@@ -8,7 +10,7 @@
 2. 解压到普通文件夹。双击 `start-web.bat` 启动网站，`start-bot.bat` 启动机器人，或 `start-all.bat` 启动包内全部服务。首次自动创建虚拟环境、安装依赖和生成 `config.json`，需要联网。
 3. 网站打开 `http://127.0.0.1:5000`；机器人面板打开 `http://127.0.0.1:6185`。机器人账号为 `astrbot`，首次随机密码保存在 `runtime/bot-login.txt`。在面板配置自己的消息平台连接，QQ 连接需要自行配置对应平台适配器。
 
-Domcer 战绩接口需要你自己的 API 密钥。在生成的 `config.json` 中填写 `"domcer_api_keys": ["你的密钥"]` 后重启。没有密钥也可以启动和浏览网站，战绩查询会提示配置。包内没有原作者的密钥、QQ 连接、绑定、聊天记录或比赛数据。
+Domcer 战绩接口需要你自己的 API Key。进入 **Domcer 大厅，在游戏聊天中输入 `/key`** 获取密钥，然后在生成的 `config.json` 中填写 `"domcer_api_keys": ["你的密钥"]` 并重启。密钥请自行保管，不要提交到 GitHub。没有密钥也可以启动和浏览网站，战绩查询会提示配置。包内没有原作者的密钥、QQ 连接、绑定、聊天记录或比赛数据。
 
 第一次打开浏览器时服务可能仍在初始化，稍等后刷新即可。关闭启动窗口或按 Ctrl+C 停止。再次启动会复用环境，依赖列表不变时跳过安装。配置格式错误、端口占用或安装失败会显示错误并保留窗口。
 
@@ -42,7 +44,7 @@ sh start.sh bot
 sh start.sh all
 ```
 
-Linux 图片渲染需安装 Chromium 和中文字体，并确保 `html2image` 能找到浏览器。未在本次 Windows 测试中验证 Linux 浏览器环境。
+Linux 图片渲染需安装 Chromium 和中文字体，并确保 `html2image` 能找到浏览器。已在 GitHub Actions 的 Ubuntu 24.04 / Python 3.13 环境实际验证网站、机器人、合并部署、面板登录和 Chrome 战绩图片生成。
 
 Linux 提供 `start-web.sh`、`start-bot.sh`、`start-all.sh`，可通过 `sh 文件名` 执行。系统 Python 缺少 venv 时先运行安装脚本。机器人自动检测 Chrome、Chromium 或 Edge；检测失败时在 `config.json` 中设置 `browser_executable` 为浏览器可执行文件的绝对路径。
 
@@ -51,8 +53,14 @@ python deploy.py all --setup-only
 python deploy.py all --no-browser
 ```
 
-独立网站包只需 Flask、Waitress 等少量依赖；机器人包包含 AstrBot 的完整依赖。`requirements.txt` 指向相应清单。不要将运行后的文件夹直接公开；仅提交源码，并排除 `.venv`、`runtime`、`config.json`、AstrBot 的运行数据和凭据。原始工作目录保留历史文件及私有数据，公开时请使用生成的 ZIP 包。
+独立网站包只需 Flask、Waitress 等少量依赖；机器人包包含 AstrBot 的完整依赖。`requirements.txt` 指向相应清单。不要将运行后的文件夹直接公开；仅提交源码，并排除 `.venv`、`runtime`、`config.json`、AstrBot 的运行数据和凭据。本机原始工作目录保留历史文件及私有数据；本 GitHub 仓库和部署 ZIP 仅包含经过清理的源码与素材。
 
 ## 本地验证
 
 安装完成后运行 `.venv/Scripts/python.exe scripts/test_release.py`（Linux 使用 `.venv/bin/python`）。测试覆盖联动开关、独立启动所需模块、查询接口模拟、管理员接口移除及同时写入数据。
+
+## 源码与持续测试
+
+下载或克隆本仓库后，可以直接使用根目录的 Windows / Linux 启动脚本。运行 `python scripts/build_release.py` 会生成六个独立的部署 ZIP，只有清单中明确选定的源码和素材会进入压缩包，运行数据不会被打包。
+
+Linux CI 分别执行独立网站、独立机器人和合并包的系统依赖安装、全新虚拟环境安装、依赖检查、回归测试、HTTP 启动、随机密码登录和实际战绩图片渲染。测试不使用真实的 Domcer 密钥或 QQ 连接；外部战绩 API 的数据路径使用模拟响应验证。Windows 的启动、登录和图片功能已在本机验证。
