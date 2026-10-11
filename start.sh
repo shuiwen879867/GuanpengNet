@@ -1,4 +1,6 @@
 #!/bin/sh
 set -eu
 cd "$(dirname "$0")"
-exec python3 deploy.py "${1:-all}" --no-browser
+service="${1:-all}"
+if [ "$#" -gt 0 ]; then shift; fi
+exec python3 deploy.py "$service" --no-browser "$@"

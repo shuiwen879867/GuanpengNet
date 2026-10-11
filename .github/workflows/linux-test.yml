@@ -43,7 +43,7 @@ jobs:
       - name: Build clean distributions
         run: python scripts/build_release.py
       - name: Install standalone distribution
-        run: python "release/${{ matrix.package }}/deploy.py" "${{ matrix.service }}" --setup-only --no-browser
+        run: sh "release/${{ matrix.package }}/install-linux.sh" "${{ matrix.service }}" --setup-only
       - name: Check dependencies and regression tests
         run: |
           "release/${{ matrix.package }}/.venv/bin/python" -m pip check
