@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关鹏第一</title>
+    <style>
+        :root {
+            --green: #4CAF50;
+            --red: #F44336;
+            --blue: #2196F3;
+            --yellow: #FFEB3B;
+            --orange: #FF9800;
+            --gray: #9E9E9E;
+            --light-green: rgba(76, 175, 80, 0.08);
+            --light-red: rgba(244, 67, 54, 0.08);
+            --light-yellow: rgba(255, 235, 59, 0.08);
+            --light-orange: rgba(255, 152, 0, 0.1);
+        }
+                .wiki-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #FF9800; /* Orange color */
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .wiki-button:hover {
+            background-color: #F57C00; /* Darker orange on hover */
+        }
+        
+        .bp-game-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #9C27B0; /* Purple color */
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .bp-game-button:hover {
+            background-color: #7B1FA2; /* Darker purple on hover */
+        }
+        
+        /* Update header to accommodate more buttons */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .button-group {
+                margin-top: 15px;
+                width: 100%;
+            }
+            
+            .bp-button, .wiki-button, .bp-game-button {
+                margin: 5px;
+                width: calc(100% - 10px);
+                text-align: center;
+            }
+        }
+        .bp-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .bp-button:hover {
+            background-color: #45a049;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* 头部样式 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        
+        /* 搜索框样式 */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .search-box input {
+            padding: 12px 15px;
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--blue);
+            outline: none;
+        }
+        
+        .search-box button {
+            padding: 12px 24px;
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .search-box button:hover {
+            background-color: #1976D2;
+        }
+        
+        /* 统计卡片样式 */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            margin-top: 0;
+            color: #757575;
+            font-size: 14px;
+        }
+        
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .stat-card .label {
+            font-size: 13px;
+            color: #9E9E9E;
+        }
+        
+        /* 比赛列表容器 */
+        .matches-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .matches-container h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* 比赛卡片样式 */
+        .match-card {
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .match-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* 胜利卡片 */
+        .match-card.win {
+            background-color: var(--light-green);
+            border-left: 4px solid var(--green);
+        }
+        
+        .match-card.win::after {
+            content: "胜利";
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-color: var(--green);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        /* 失败卡片 */
+        .match-card.lose {
+            background-color: var(--light-red);
+            border-left: 4px solid var(--red);
+        }
+        
+        .match-card.lose::after {
+            content: "失败";
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-color: var(--red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        /* 平局卡片 */
+        .match-card.draw {
+            background-color: var(--light-yellow);
+            border-left: 4px solid var(--yellow);
+        }
+        
+        .match-card.draw::after {
+            content: "平局";
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-color: var(--yellow);
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        /* MVP卡片 */
+        .match-card.mvp {
+            box-shadow: 0 0 0 2px var(--orange);
+            background: linear-gradient(135deg, var(--light-orange) 0%, rgba(255,255,255,1) 50%);
+        }
+        
+        /* MVP徽章 */
+        .mvp-badge {
+            position: absolute;
+            right: 20px;
+            top: 50px;
+            background-color: var(--orange);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            animation: pulse-orange 2s infinite;
+            z-index: 2;
+        }
+        
+        @keyframes pulse-orange {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,152,0,0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255,152,0,0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,152,0,0); }
+        }
+        
+        /* 比赛头部信息 */
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            position: relative;
+            padding-right: 70px;
+        }
+        
+        .match-map {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .match-mode {
+            background-color: #E3F2FD;
+            color: #1565C0;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            order: 1;
+        }
+        
+        /* 比赛时间信息 */
+        .match-time {
+            color: #757575;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        /* 队伍和职业信息 */
+        .match-team {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .team-green {
+            background-color: var(--green);
+            color: white;
+        }
+        
+        .team-red {
+            background-color: var(--red);
+            color: white;
+        }
+        
+        .team-blue {
+            background-color: var(--blue);
+            color: white;
+        }
+        
+        .team-yellow {
+            background-color: var(--yellow);
+            color: #333;
+        }
+        /* 日期筛选器样式 */
+        .time-filter {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .filter-btn.active {
+            background-color: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+        /* 职业统计表格样式 */
+        .kit-stats-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .kit-stats-table-container {
+            overflow-x: auto;
+        }
+
+        .kit-stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .kit-stats-table th,
+        .kit-stats-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .kit-stats-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+        }
+
+        .kit-stats-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .kit-stats-table td:first-child {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .time-filter {
+                flex-wrap: wrap;
+            }
+            
+            .filter-btn {
+                flex: 1;
+                min-width: calc(50% - 10px);
+                text-align: center;
+            }
+            
+            .kit-stats-table {
+                font-size: 12px;
+            }
+            
+            .kit-stats-table th,
+            .kit-stats-table td {
+                padding: 8px 10px;
+            }
+        }
+        
+        .match-kit {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(0,0,0,0.05);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        
+        /* 比赛统计数据 */
+        .match-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.03);
+            border-radius: 6px;
+        }
+
+        .kit-stats-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #9C27B0; /* 紫色 */
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .kit-stats-button:hover {
+            background-color: #7B1FA2;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 5px;
+        }
+        
+        /* 查看详情按钮 */
+        .view-details {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: var(--blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .view-details:hover {
+            background-color: #1976D2;
+        }
+        
+        /* 加载和错误状态 */
+        .loading {
+            padding: 40px;
+            text-align: center;
+            color: #757575;
+            font-size: 16px;
+        }
+        
+        .error {
+            padding: 15px;
+            background-color: #FFEBEE;
+            border-radius: 8px;
+            color: #F44336;
+            margin-bottom: 20px;
+            border-left: 4px solid #F44336;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .stats-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .match-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .match-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding-right: 0;
+            }
+            
+            .match-card::after,
+            .mvp-badge {
+                position: static;
+                display: inline-block;
+                margin-top: 10px;
+            }
+            
+            .match-mode {
+                order: 0;
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .match-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>关鹏网 · 战绩查询</h1>
+                 <div class="button-group">
+            <a href="/wiki.html" class="wiki-button">查看Wiki</a>
+            <a href="/kit_stats" class="kit-stats-button">查看职业数据</a>
+            <a href="/class_stats" class="kit-stats-button" style="background:#FF5722">📊 职业统计(新)</a>
+        </div>
+    </div>
+    
+    <div class="search-box">
+        <input type="text" id="username" placeholder="输入玩家名称">
+        <button onclick="searchPlayer()">查询战绩</button>
+    </div>
+    
+    <div id="results">
+        <!-- 结果将在这里显示 -->
+    </div>
+
+    
+    <script>
+        // 职业头像映射（由后端注入）
+        const kitImageMap = {{ kit_image_map | tojson }};
+        
+        // 添加全局变量
+        let currentMatches = [];
+        let currentUsername = '';
+        // 队伍颜色映射
+        const teamColors = {
+            "GREEN": { name: "绿队", color: "#4CAF50", class: "team-green" },
+            "RED": { name: "红队", color: "#F44336", class: "team-red" },
+            "BLUE": { name: "蓝队", color: "#2196F3", class: "team-blue" },
+            "YELLOW": { name: "黄队", color: "#FFEB3B", class: "team-yellow" },
+            "UNKNOWN": { name: "未知", color: "#9E9E9E", class: "" },
+            "NONE": { name: "无", color: "#9E9E9E", class: "" }
+        };
+        
+        // 游戏模式翻译
+        const gameModes = {
+            "NORMAL": "标准模式",
+            "FACE_OFF": "对决模式",
+            "PRACTICE": "练习模式"
+        };
+        
+        // 获取职业头像 URL
+        function getKitImage(kitName) {
+            const filename = kitImageMap[kitName];
+            return filename ? `/static/kit_img/${filename}` : '';
+        }
+
+        // 时间戳格式化函数
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return '未知时间';
+            // 如果时间戳是10位数(秒)，乘以1000转换为毫秒
+            const date = new Date(timestamp.toString().length === 10 ? timestamp * 1000 : timestamp);
+            return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        function searchPlayer() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                showError('请输入玩家名称');
+                return;
+            }
+            
+            currentUsername = username;
+            showLoading();
+            
+            fetch(`/api/player/matches?username=${encodeURIComponent(username)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+                    
+                    if (data.matches.length === 0) {
+                        showError(`没有找到玩家 ${username} 的比赛记录`);
+                        return;
+                    }
+                    
+                    currentMatches = data.matches;
+                    displayPlayerStats(data.username, data.matches);
+                    setupTimeFilter();
+                })
+                .catch(error => {
+                    showError('查询失败，请稍后再试');
+                    console.error(error);
+                });
+        }
+
+        function setupTimeFilter() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除其他按钮的active类
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    // 为当前按钮添加active类
+                    this.classList.add('active');
+                    
+                    const days = this.dataset.days;
+                    filterMatchesByTime(days);
+                });
+            });
+        }
+
+        function filterMatchesByTime(days) {
+            let filteredMatches = [...currentMatches];
+            
+            if (days !== 'all') {
+                const cutoffTime = Date.now() - (parseInt(days) * 24 * 60 * 60 * 1000);
+                filteredMatches = currentMatches.filter(match => {
+                    const matchTime = match.startTime.toString().length === 10 ? 
+                        match.startTime * 1000 : match.startTime;
+                    return matchTime >= cutoffTime;
+                });
+            }
+            
+            if (filteredMatches.length === 0) {
+                showError(`在选定的时间范围内没有找到比赛记录`);
+                return;
+            }
+            
+            displayPlayerStats(currentUsername, filteredMatches);
+        }
+
+        
+        function showLoading() {
+            document.getElementById('results').innerHTML = `
+                <div class="loading">
+                    <p>正在查询玩家战绩...</p>
+                </div>
+            `;
+        }
+        
+        function showError(message) {
+            document.getElementById('results').innerHTML = `
+                <div class="error">${escapePlayerText(message)}</div>
+            `;
+        }
+        
+        function displayPlayerStats(username, matches) {
+            // 计算基本统计数据
+            const stats = calculateStats(matches);
+            
+            // 计算职业统计数据
+            const kitStats = calculateKitStats(matches);
+            
+            let html = `
+                <h2>${escapePlayerText(username)} 的战绩统计</h2>
+                
+                <div class="stats-summary">
+                    <div class="stat-card">
+                        <h3>总比赛场次</h3>
+                        <div class="value">${matches.length}</div>
+                        <div class="label">筛选比赛记录</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>胜率</h3>
+                        <div class="value">${stats.winRate}%</div>
+                        <div class="label">${stats.wins}胜 ${stats.losses}负 ${stats.draws}平</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>最终击杀</h3>
+                        <div class="value">${stats.avgFinalKills}</div>
+                        <div class="label">场均 ${stats.totalFinalKills}总计</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>场均伤害</h3>
+                        <div class="value">${stats.avgDamage}</div>
+                        <div class="label">${stats.totalDamage}总伤害</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>场均承受伤害</h3>
+                        <div class="value">${stats.avgDamageTaken}</div>
+                        <div class="label">${stats.totalDamageTaken}总承伤</div>
+                    </div>
+                </div>
+                
+                <!-- 日期筛选器 -->
+                <div class="time-filter">
+                    <button class="filter-btn active" data-days="all">全部历史</button>
+                    <button class="filter-btn" data-days="30">最近一月</button>
+                    <button class="filter-btn" data-days="7">最近一周</button>
+                    <button class="filter-btn" data-days="1">最近一天</button>
+                </div>
+                
+                <!-- 职业统计表格 -->
+                <div class="kit-stats-container">
+                    <h3>职业数据统计</h3>
+                    <div class="kit-stats-table-container">
+                        <table class="kit-stats-table">
+                            <thead>
+                                <tr>
+                                    <th>职业</th>
+                                    <th>使用率</th>
+                                    <th>场数</th>
+                                    <th>场均最终击杀</th>
+                                    <th>场均最终助攻</th>
+                                    <th>场均伤害</th>
+                                    <th>场均承伤</th>
+                                    <th>胜场</th>
+                                    <th>胜率</th>
+                                    <th>MVP次数</th>
+                                    <th>MVP率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kit-stats-body">
+                                ${generateKitStatsHTML(kitStats, matches.length)}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="matches-container">
+                    <h3>比赛记录 (${matches.length}场)</h3>
+            `;
+            
+            // 添加比赛记录卡片
+            matches.forEach(match => {
+                const team = teamColors[match.team] || teamColors.UNKNOWN;
+                let resultClass = '';
+                let isMVP = match.mvp === true;
+                
+                if (match.winner === match.team) {
+                    resultClass = 'win';
+                } else if (match.winner === 'NONE') {
+                    resultClass = 'draw';
+                } else {
+                    resultClass = 'lose';
+                }
+                
+                const kitImg = getKitImage(match.selectedKit);
+                html += `
+                    <div class="match-card ${resultClass} ${isMVP ? 'mvp' : ''}">
+                        ${isMVP ? '<div class="mvp-badge">MVP</div>' : ''}
+                        <div class="match-header">
+                            <span class="match-map">${match.mapName || '未知地图'}</span>
+                            <span class="match-mode">${gameModes[match.mode] || match.mode || '未知模式'}</span>
+                        </div>
+                        <div class="match-time">
+                            ${formatTimestamp(match.startTime)} • ${match.duration || '未知时长'}
+                        </div>
+                        <div>
+                            <span class="match-team ${team.class}">
+                                ${team.name}
+                            </span>
+                            <span class="match-kit">
+                                ${kitImg ? `<img src="${kitImg}" style="width:36px;height:36px;border-radius:4px;vertical-align:middle;margin-right:5px;" onerror="this.style.display='none'">` : ''}${match.selectedKit || '未知职业'}
+                            </span>
+                        </div>
+                        <div class="match-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${match.finalKills || 0}</div>
+                                <div class="stat-label">最终击杀</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${match.finalAssists || 0}</div>
+                                <div class="stat-label">最终助攻</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${Math.round(match.totalDamage) || 0}</div>
+                                <div class="stat-label">造成伤害</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${Math.round(match.takenDamage) || 0}</div>
+                                <div class="stat-label">承受伤害</div>
+                            </div>
+                        </div>
+                        <a href="/match?id=${match.id}" class="view-details">查看完整详情</a>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            document.getElementById('results').innerHTML = html;
+            
+            // 重新设置筛选器事件
+            setupTimeFilter();
+        }
+        
+        function calculateKitStats(matches) {
+            const kitStats = {};
+            
+            matches.forEach(match => {
+                const kit = match.selectedKit || '未知职业';
+                const isWin = match.winner === match.team;
+                const isMVP = match.mvp === true;
+                
+                if (!kitStats[kit]) {
+                    kitStats[kit] = {
+                        games: 0,
+                        wins: 0,
+                        mvps: 0,
+                        totalFinalKills: 0,
+                        totalFinalAssists: 0,
+                        totalDamage: 0,
+                        totalDamageTaken: 0
+                    };
+                }
+                
+                kitStats[kit].games++;
+                if (isWin) kitStats[kit].wins++;
+                if (isMVP) kitStats[kit].mvps++;
+                kitStats[kit].totalFinalKills += match.finalKills || 0;
+                kitStats[kit].totalFinalAssists += match.finalAssists || 0;
+                kitStats[kit].totalDamage += match.totalDamage || 0;
+                kitStats[kit].totalDamageTaken += match.totalDamageTaken || 0;
+            });
+            
+            return kitStats;
+        }
+
+        function generateKitStatsHTML(kitStats, totalGames) {
+            let html = '';
+            
+            Object.entries(kitStats).forEach(([kit, stats]) => {
+                const usageRate = ((stats.games / totalGames) * 100).toFixed(1);
+                const avgFinalKills = (stats.totalFinalKills / stats.games).toFixed(1);
+                const avgFinalAssists = (stats.totalFinalAssists / stats.games).toFixed(1);
+                const avgDamage = Math.round(stats.totalDamage / stats.games);
+                const avgDamageTaken = Math.round(stats.totalDamageTaken / stats.games);
+                const winRate = ((stats.wins / stats.games) * 100).toFixed(1);
+                const mvpRate = stats.wins > 0 ? ((stats.mvps / stats.wins) * 100).toFixed(1) : '0.0';
+                
+                html += `
+                    <tr>
+                        <td>${kit}</td>
+                        <td>${usageRate}%</td>
+                        <td>${stats.games}</td>
+                        <td>${avgFinalKills}</td>
+                        <td>${avgFinalAssists}</td>
+                        <td>${avgDamage}</td>
+                        <td>${avgDamageTaken}</td>
+                        <td>${stats.wins}</td>
+                        <td>${winRate}%</td>
+                        <td>${stats.mvps}</td>
+                        <td>${mvpRate}%</td>
+                    </tr>
+                `;
+            });
+            
+            return html;
+        }
+
+        function calculateStats(matches) {
+            let wins = 0;
+            let losses = 0;
+            let draws = 0;
+            let totalFinalKills = 0;
+            let totalDamage = 0;
+            let totalDamageTaken = 0;
+            
+            matches.forEach(match => {
+                if (match.winner === match.team) {
+                    wins++;
+                } else if (match.winner === 'NONE') {
+                    draws++;
+                } else {
+                    losses++;
+                }
+                
+                totalFinalKills += match.finalKills || 0;
+                totalDamage += match.totalDamage || 0;
+                totalDamageTaken += match.takenDamage || 0;
+            });
+            
+            return {
+                wins: wins,
+                losses: losses,
+                draws: draws,
+                winRate: matches.length > 0 ? ((wins / matches.length) * 100).toFixed(1) : '0.0',
+                totalFinalKills: totalFinalKills,
+                avgFinalKills: matches.length > 0 ? (totalFinalKills / matches.length).toFixed(1) : '0.0',
+                totalDamage: Math.round(totalDamage),
+                avgDamage: matches.length > 0 ? Math.round(totalDamage / matches.length) : 0,
+                totalDamageTaken: Math.round(totalDamageTaken),
+                avgDamageTaken: matches.length > 0 ? Math.round(totalDamageTaken / matches.length) : 0
+            };
+        }
+        function escapePlayerText(value) {
+            const element = document.createElement('span');
+            element.textContent = value;
+            return element.innerHTML;
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = new URLSearchParams(window.location.search).get('username');
+            if (player && player.trim()) {
+                document.getElementById('username').value = player.trim();
+                searchPlayer();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ kit }}操作者数据 · 关鹏网</title>
+<style>
+*{box-sizing:border-box}body{font:15px/1.6 'Microsoft YaHei',sans-serif;background:#f5f5f5;color:#333;margin:0;padding:24px}main{max-width:1400px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}h1{font-size:26px}a{color:#1475bd}form{display:flex;gap:14px;align-items:end;flex-wrap:wrap;background:white;border-radius:10px;padding:18px;margin:18px 0}label{display:block}input,button{font:inherit;padding:8px 12px;border:1px solid #ccd3db;border-radius:6px;max-width:100%}button{background:#1976d2;color:white;cursor:pointer}.notice{padding:12px 16px;background:#fff4d6;border:1px solid #ecd7a4;border-radius:8px}.table-wrap{overflow:auto;background:#fff;border-radius:10px}table{border-collapse:collapse;min-width:1020px;width:100%}th,td{padding:12px;text-align:center;border-bottom:1px solid #eee;white-space:nowrap}th{background:#edf3fa}td:nth-child(2){text-align:left}tbody tr:hover{background:#f3f8ff}.pager{display:flex;gap:18px;align-items:center;justify-content:center;margin:24px 0}.empty{text-align:center;padding:32px}.muted{color:#657384}@media(max-width:600px){body{padding:14px}h1{font-size:22px}form{align-items:stretch}form label{width:100%}input{width:100%}}
+</style></head><body><main>
+<header><h1>{{ kit }} · 操作者数据</h1><a href="/class_stats">返回职业数据</a></header>
+<p class="notice">职业数据来自关鹏网统计，可能不全</p>
+<p class="muted">仅统计玩家使用该职业的已收录对局。点击玩家名称可直接查询该玩家战绩。</p>
+<form method="get">
+<label>职业名称<input name="kit" value="{{ kit }}" required maxlength="60"></label>
+<label>开始日期<input type="date" name="start" value="{{ start }}"></label>
+<label>结束日期<input type="date" name="end" value="{{ end }}"></label>
+<label>搜索操作者<input name="player" value="{{ search }}" maxlength="100" placeholder="输入玩家名称"></label>
+<button type="submit">查询操作者</button><a href="{{ url_for('class_players.page', kit=kit) }}">全部时间与玩家</a>
+</form>
+<p>该职业共 <strong>{{ total }}</strong> 位操作者{% if search %}，搜索匹配 {{ count }} 位{% endif %}；按使用场数排序，每页 50 位。</p>
+{% if error %}<p class="notice" role="alert">{{ error }}</p>{% endif %}
+<div class="table-wrap"><table><thead><tr><th>序号</th><th>玩家名称</th><th>使用场数</th><th>胜场</th><th>胜率</th><th>MVP次数</th><th>场均最终击杀</th><th>场均最终助攻</th><th>场均伤害</th><th>场均承伤</th></tr></thead>
+<tbody>{% for p in players %}<tr><td>{{ offset + loop.index }}</td><td><a href="{{ url_for('index', username=p.name) }}">{{ p.name }}</a></td><td>{{ p.games }}</td><td>{{ p.wins }}</td><td>{{ p.win_rate }}%</td><td>{{ p.mvps }}</td><td>{{ p.avg_fk }}</td><td>{{ p.avg_fa }}</td><td>{{ p.avg_damage }}</td><td>{{ p.avg_taken }}</td></tr>
+{% else %}<tr><td colspan="10" class="empty">没有符合条件的操作者数据，请调整筛选条件。</td></tr>{% endfor %}</tbody></table></div>
+<nav class="pager" aria-label="操作者分页">{% if page > 1 %}<a href="{{ url_for('class_players.page', kit=kit, start=start, end=end, player=search, page=page-1) }}">上一页</a>{% endif %}<span>第 {{ page }} / {{ pages }} 页</span>{% if page < pages %}<a href="{{ url_for('class_players.page', kit=kit, start=start, end=end, player=search, page=page+1) }}">下一页</a>{% endif %}</nav>
+</main></body></html>

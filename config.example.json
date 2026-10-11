@@ -1,0 +1,15 @@
+{
+  "linkage_enabled": true,
+  "shared_data_dir": "runtime/shared",
+  "web_data_dir": "runtime/web",
+  "bot_data_dir": "runtime/bot",
+  "domcer_api_base": "https://api.domcer.com",
+  "domcer_api_keys": [],
+  "web_host": "127.0.0.1",
+  "web_port": 5000,
+  "bot_dashboard_host": "127.0.0.1",
+  "bot_dashboard_port": 6185,
+  "game_status_url": "",
+  "browser_executable": "",
+  "commands": {}
+}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>职业数据统计 - 关鹏网</title>
+    <style>
+        :root { --blue: #2196F3; --green: #4CAF50; --red: #F44336; --orange: #FF9800; }
+        body { font-family: 'Microsoft YaHei',sans-serif; max-width:1400px; margin:0 auto; padding:20px; background:#f5f5f5; color:#333; }
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+        .header h1 { margin:0; }
+        .back-link { padding:8px 15px; background:var(--blue); color:#fff; text-decoration:none; border-radius:4px; font-size:14px; }
+        .filter-bar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#fff; padding:15px; border-radius:8px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+        .filter-bar input[type="date"] { padding:8px 12px; border:1px solid #ddd; border-radius:4px; font-size:14px; }
+        .filter-bar button { padding:8px 20px; border:none; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold; }
+        .btn-query { background:var(--blue); color:#fff; }
+        .btn-reset { background:#e0e0e0; color:#333; }
+        .cache-info { font-size:12px; color:#999; margin-left:auto; }
+        .table-container { overflow-x:auto; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+        table { width:100%; border-collapse:collapse; min-width:900px; }
+        th, td { padding:10px 8px; text-align:center; border-bottom:1px solid #eee; font-size:13px; white-space:nowrap; }
+        th { background:#f8f9fa; font-weight:bold; position:sticky; top:0; z-index:1; }
+        th:nth-child(1), td:nth-child(1) { text-align:left; padding-left:15px; }
+        tbody tr:hover { background:#f0f7ff; }
+        .kit-img { width:28px; height:28px; border-radius:4px; vertical-align:middle; margin-right:6px; }
+        .highlight { color:var(--orange); font-weight:bold; }
+        .top1 { background:#fffde7; }
+        .loading { text-align:center; padding:40px; color:#999; }
+        @media (max-width:768px) { .filter-bar { flex-direction:column; align-items:stretch; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 职业数据统计</h1>
+        <a href="/" class="back-link">← 返回查询</a>
+    </div>
+
+    <div class="filter-bar">
+        <label>开始日期:</label>
+        <input type="date" id="start_date">
+        <label>结束日期:</label>
+        <input type="date" id="end_date">
+        <button class="btn-query" onclick="query()">查询</button>
+        <button class="btn-reset" onclick="resetFilter()">全部</button>
+        <span class="cache-info">缓存: {{ cache_info.match_count }} 场 / {{ cache_info.computed_at }}</span>
+    </div>
+
+    <form action="/class_players" method="get" class="filter-bar">
+        <label for="operator-kit">查询职业操作者：</label>
+        <input id="operator-kit" name="kit" required maxlength="60" placeholder="例如：僵尸">
+        <button type="submit" class="btn-query">查看全部操作者</button>
+        <span>职业数据来自关鹏网统计，可能不全</span>
+    </form>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>职业</th>
+                    <th>出场数</th>
+                    <th>出场率</th>
+                    <th>胜率</th>
+                    <th>MVP率</th>
+                    <th>场均击杀</th>
+                    <th>场均助攻</th>
+                    <th>场均伤害</th>
+                    <th>场均承伤</th>
+                    <th>操作者</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <tr><td colspan="10" class="loading">加载中...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const kitImageMap = {{ kit_image_map | tojson }};
+        function kitImg(kit) {
+            const f = kitImageMap[kit];
+            return f ? `<img class="kit-img" src="/static/kit_img/${f}" onerror="this.style.display='none'">` : '';
+        }
+
+        async function query() {
+            const start = document.getElementById('start_date').value;
+            const end = document.getElementById('end_date').value;
+            const params = new URLSearchParams();
+            if (start) params.set('start', start);
+            if (end) params.set('end', end);
+
+            document.getElementById('tbody').innerHTML = '<tr><td colspan="10" class="loading">查询中...</td></tr>';
+
+            try {
+                const resp = await fetch('/api/class_stats?' + params.toString());
+                const data = await resp.json();
+                render(data.stats, start, end);
+                // 更新缓存信息
+                if (data.cache_info) {
+                    document.querySelector('.cache-info').textContent =
+                        `缓存: ${data.cache_info.match_count} 场 / ${data.cache_info.computed_at}`;
+                }
+            } catch (e) {
+                document.getElementById('tbody').innerHTML = '<tr><td colspan="10" class="loading" style="color:red">查询失败</td></tr>';
+            }
+        }
+
+        function escapeHtml(value) {
+            const node = document.createElement('span');
+            node.textContent = value;
+            return node.innerHTML;
+        }
+        function render(stats, start, end) {
+            if (!stats || stats.length === 0) {
+                document.getElementById('tbody').innerHTML = '<tr><td colspan="10" class="loading">无数据</td></tr>';
+                return;
+            }
+            let html = '';
+            stats.forEach((s, i) => {
+                const rowClass = i === 0 ? 'top1' : '';
+                html += `<tr class="${rowClass}">
+                    <td>${kitImg(s.kit)}${escapeHtml(s.kit)}</td>
+                    <td>${s.apps}</td>
+                    <td><span class="highlight">${s.appearance_rate}%</span></td>
+                    <td>${s.win_rate}%</td>
+                    <td>${s.mvp_rate}%</td>
+                    <td>${s.avg_final_kills}</td>
+                    <td>${s.avg_final_assists}</td>
+                    <td>${s.avg_damage}</td>
+                    <td>${s.avg_damage_taken}</td>
+                    <td><a href="/class_players?${new URLSearchParams({kit:s.kit, start, end}).toString()}">查看全部操作者</a></td>
+                </tr>`;
+            });
+            document.getElementById('tbody').innerHTML = html;
+        }
+
+        function resetFilter() {
+            document.getElementById('start_date').value = '';
+            document.getElementById('end_date').value = '';
+            query();
+        }
+
+        // 页面加载时自动查询
+        query();
+    </script>
+</body>
+</html>

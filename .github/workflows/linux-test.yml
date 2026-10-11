@@ -1,0 +1,61 @@
+name: Linux deployment tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Ubuntu / ${{ matrix.service }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: web
+            package: GuanpengNet-Linux
+          - service: bot
+            package: GuanpengBot-Linux
+          - service: all
+            package: GuanpengSuite-Linux
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Install Chinese fonts and check browser
+        if: matrix.service != 'web'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+          google-chrome --version
+      - name: Validate shell scripts
+        run: |
+          for script in start.sh start-web.sh start-bot.sh start-all.sh install-linux.sh; do
+            bash -n "$script"
+          done
+      - name: Build clean distributions
+        run: python scripts/build_release.py
+      - name: Install standalone distribution
+        run: python "release/${{ matrix.package }}/deploy.py" "${{ matrix.service }}" --setup-only --no-browser
+      - name: Check dependencies and regression tests
+        run: |
+          "release/${{ matrix.package }}/.venv/bin/python" -m pip check
+          "release/${{ matrix.package }}/.venv/bin/python" "release/${{ matrix.package }}/scripts/test_release.py"
+      - name: Start services, log in and render query images
+        run: python scripts/smoke_deployment.py --package "release/${{ matrix.package }}" --service "${{ matrix.service }}"
+      - name: Save startup logs and images
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-${{ matrix.service }}-test-evidence
+          path: |
+            release/${{ matrix.package }}/runtime/smoke-startup.log
+            release/${{ matrix.package }}/runtime/smoke-images/**/*.png
+          if-no-files-found: ignore

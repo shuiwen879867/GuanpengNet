@@ -1,0 +1,18 @@
+{
+  "guild_online_count": "g人数",
+  "guild_overview": "g",
+  "guild_room_details": "g详情",
+  "daily_sign": "签到",
+  "get_currency": "关鹏币",
+  "query_megawalls": "mw查询",
+  "match_details": "mw详情",
+  "guanpeng_help": "关鹏help",
+  "bind_account": "绑定",
+  "unbind_account": "解绑",
+  "set_sign_bg": "签到背景",
+  "set_query_bg": "查询背景",
+  "query_kit_stats": "职业查询",
+  "yesterday_class_stats": "昨日职业数据",
+  "yesterday_performance": "昨日表现",
+  "today_performance": "今日表现"
+}

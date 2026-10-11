@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>比赛详情 - {{ match.id }}</title>
+    <style>
+        :root {
+            --green: #4CAF50;
+            --red: #F44336;
+            --blue: #2196F3;
+            --yellow: #FFEB3B;
+            --gray: #9E9E9E;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background-color: var(--blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .match-summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .match-title {
+            font-size: 24px;
+            margin: 0;
+        }
+        .match-id {
+            color: #757575;
+            font-size: 14px;
+        }
+        .match-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            background-color: #f5f5f5;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .winner-item {
+            background-color: #FFD700;
+            font-weight: bold;
+        }
+        .mvp-item {
+            background-color: #FF9800;
+            color: white;
+        }
+        .team-section {
+            margin-bottom: 30px;
+        }
+        .team-header {
+            padding: 10px 15px;
+            color: white;
+            border-radius: 6px 6px 0 0;
+            margin-bottom: 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .team-count {
+            background-color: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 0;
+        }
+        .player-card {
+            background-color: white;
+            border-radius: 0 0 6px 6px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .player-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0;
+        }
+        .player-kit {
+            background-color: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #757575;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .winner-badge {
+            background-color: #FFD700;
+            color: #333;
+        }
+        .mvp-badge {
+            background-color: #FF9800;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← 返回查询页面</a>
+    
+    <div class="match-summary">
+        <div class="summary-header">
+            <h1 class="match-title">{{ match.mapName }}</h1>
+            <span class="match-id">ID: {{ match.id }}</span>
+        </div>
+        
+        <div class="match-meta">
+            <div class="meta-item">模式: {{ game_modes.get(match.mode, match.mode) }}</div>
+            <div class="meta-item">开始: {{ match.startTime }}</div>
+            <div class="meta-item">时长: {{ match.duration }}</div>
+            {% if match.winner and match.winner != "NONE" %}
+            <div class="meta-item winner-item">
+                胜利队伍: {{ team_colors[match.winner].name }}
+            </div>
+            {% endif %}
+            {% if match.mvp %}
+            <div class="meta-item mvp-item">MVP: {{ match.mvp }}</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% for team, players in teams %}
+    <div class="team-section">
+        <div class="team-header" style="background-color: {{ team_colors[team].color }}; color: {{ team_colors[team].text_color }}">
+            <span>{{ team_colors[team].name }}</span>
+            <span class="team-count">{{ players|length }}人</span>
+        </div>
+        
+        <div class="players-grid">
+            {% for player in players %}
+            <div class="player-card">
+                <div class="player-header">
+                    <h3 class="player-name">
+                        {{ player.realName }}
+                        {% if match.winner == team %}<span class="badge winner-badge">胜利</span>{% endif %}
+                        {% if match.mvp == player.realName %}<span class="badge mvp-badge">MVP</span>{% endif %}
+                    </h3>
+                    <span class="player-kit">
+                        {% set kit_img = kit_image_map.get(player.selectedKit, '') %}
+                        {% if kit_img %}<img src="/static/kit_img/{{ kit_img }}" style="width:32px;height:32px;border-radius:4px;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'">{% endif %}{{ kit_translations.get(player.selectedKit, player.selectedKit) }}
+                    </span>
+                </div>
+                
+                <div class="player-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">{{ player.finalKills|default(0) }}</span>
+                        <span class="stat-label">最终击杀</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ player.finalAssists|default(0) }}</span>
+                        <span class="stat-label">最终助攻</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ player.kills|default(0) }}</span>
+                        <span class="stat-label">击杀</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ player.totalDamage|default(0)|round }}</span>
+                        <span class="stat-label">伤害</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ player.takenDamage|default(0)|round }}</span>
+                        <span class="stat-label">承受伤害</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>
