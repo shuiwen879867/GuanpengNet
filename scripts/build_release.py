@@ -43,6 +43,7 @@ def build(name, services, platform):
     package.mkdir(parents=True, exist_ok=True)
     for source in (
         "LICENSE",
+        "THIRD_PARTY_NOTICES.md",
         "README.opensource.md",
         "config.example.json",
         "deploy.py",

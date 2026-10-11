@@ -2,7 +2,7 @@
 
 [下载 Windows / Linux 部署包](https://github.com/shuiwen879867/GuanpengNet/releases/latest) · [Linux 测试记录](https://github.com/shuiwen879867/GuanpengNet/actions/workflows/linux-test.yml)
 
-本项目包含关鹏网战绩查询网站，以及基于 AstrBot 4.14.4 的关鹏机器人（战绩、职业统计、签到和背景）。采用 AGPL-3.0，保留 AstrBot 的许可证和完整框架源码。
+本项目包含关鹏网战绩查询网站，以及基于 AstrBot 4.14.4 的关鹏机器人（战绩、职业统计、签到和背景）。本项目原创代码采用 **MIT** 协议，允许使用、修改、分发、再许可和商业用途，须保留版权及许可声明。第三方 AstrBot 框架及其衍生修改仍采用 AGPL-3.0，保留许可证和完整框架源码；包含该框架的机器人组合包须遵守相应 AGPL 要求。详见 [LICENSE](LICENSE) 与 [第三方许可说明](THIRD_PARTY_NOTICES.md)。
 
 ## Windows 三步启动
 
